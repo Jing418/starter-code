@@ -1,6 +1,7 @@
 from typing import Any, List, Optional
+from datetime import datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ConfigDict
 
 
 class SchoolPostModel(BaseModel):
@@ -11,6 +12,7 @@ class SchoolModel(SchoolPostModel):
     id: int
     classrooms: Optional[List[int]] = None
     user_accounts: Optional[List[int]] = None
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("classrooms", "user_accounts", mode="before")
     @classmethod
@@ -34,6 +36,7 @@ class ClassroomPostModel(BaseModel):
 class ClassroomModel(ClassroomPostModel):
     id: int
     user_accounts: Optional[List[int]] = None
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("user_accounts", mode="before")
     @classmethod
@@ -58,6 +61,7 @@ class UserAccountPostModel(BaseModel):
 
 class UserAccountModel(UserAccountPostModel):
     id: int
+    model_config = ConfigDict(from_attributes=True)
 
     @field_validator("classrooms", mode="before")
     @classmethod
@@ -71,3 +75,24 @@ class UserAccountUpdateModel(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     is_student: Optional[bool] = None
+
+
+class AssignmentPostModel(BaseModel):
+    title: str
+    body: str
+    submission_date: datetime
+    classroom_id: int
+    student_id: int
+
+
+class AssignmentModel(AssignmentPostModel):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AssignmentUpdateModel(BaseModel):
+    title: Optional[str] = None
+    body: Optional[str] = None
+    submission_date: Optional[datetime] = None
+    classroom_id: Optional[int] = None
+    student_id: Optional[int] = None

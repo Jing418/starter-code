@@ -1,6 +1,7 @@
 from typing import List
+from datetime import datetime
 
-from sqlalchemy import Column, ForeignKey, String, Table, create_engine
+from sqlalchemy import Column, ForeignKey, String, Table, Text, DateTime, create_engine
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -58,6 +59,7 @@ class Classroom(Base):
     user_accounts: Mapped[List["UserAccount"]] = relationship(
         secondary=classroom_user_account_table, back_populates="classrooms"
     )
+    assignments: Mapped[List["Assignment"]] = relationship(back_populates="classroom")
 
 
 class UserAccount(Base):
@@ -77,6 +79,28 @@ class UserAccount(Base):
     classrooms: Mapped[List["Classroom"]] = relationship(
         secondary=classroom_user_account_table, back_populates="user_accounts"
     )
+    assignments: Mapped[List["Assignment"]] = relationship(back_populates="student")
+
+
+class Assignment(Base):
+    """
+    Represents a student assignment submission in the system
+    """
+
+    __tablename__ = "assignment"
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    title: Mapped[str] = mapped_column(String(255))
+    body: Mapped[str] = mapped_column(Text)
+    submission_date: Mapped[datetime] = mapped_column(DateTime)
+    classroom_id: Mapped[int] = mapped_column(
+        ForeignKey("classroom.id", ondelete="CASCADE"), nullable=False
+    )
+    student_id: Mapped[int] = mapped_column(
+        ForeignKey("user_account.id", ondelete="CASCADE"), nullable=False
+    )
+
+    classroom: Mapped["Classroom"] = relationship(back_populates="assignments")
+    student: Mapped["UserAccount"] = relationship(back_populates="assignments")
 
 
 Base.registry.configure()

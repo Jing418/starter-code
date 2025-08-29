@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.db import Base, engine
-from app.routers import classroom_router, school_router, user_router
+from app.routers import classroom_router, school_router, user_router, assignment_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(school_router)
 app.include_router(classroom_router)
 app.include_router(user_router)
+app.include_router(assignment_router)
 
 
 @app.get("/")
